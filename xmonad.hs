@@ -9,6 +9,7 @@ import XMonad.Actions.Promote
 import XMonad.Actions.CycleWS (nextScreen, prevScreen, shiftPrevScreen, shiftNextScreen)
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.Ungrab
+import XMonad.Layout.NoBorders (smartBorders)
 
 -- Variable definitions
 myModMask = mod4Mask
@@ -35,17 +36,22 @@ myKeys =
     , ("M-k", sendMessage NextLayout)
     , ("M-S-s", unGrab *> spawn ("scrot -s " ++ myScreenShotArgs))
     , ("M-s", unGrab *> spawn ("scrot " ++ myScreenShotArgs))
-    -- , ("<XF86AudioMute>", toggleMute >> return ())
-    -- , ("<XF86AudioRaiseVolume>", raiseVolume 5 >> return ())
-    -- , ("<XF86AudioLowerVolume>", lowerVolume 5 >> return ())
+    , ("<XF86AudioMute>", spawn "pamixer -t")
+    , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5")
+    , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5")
     -- , ("<XF86MonBrightnessUp>", increase)
     -- , ("<XF86MonBrightnessDown>", decrease)
     ]
+
+myLayout = smartBorders $ myTall ||| Mirror myTall ||| Full
+  where
+    myTall = Tall 1 (10/100) (1/2)
 
 myConfig = def
   { modMask = myModMask
   , terminal = myTerminal
   , focusFollowsMouse = False
+  , layoutHook = myLayout
   , normalBorderColor = "#000000"
   , focusedBorderColor = "#ffffff"
   }
