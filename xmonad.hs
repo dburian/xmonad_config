@@ -6,7 +6,6 @@ import XMonad.Util.Loggers
 -- import XMonad.Util.Brightness (increase, decrease)
 import XMonad.Actions.Promote
 -- import XMonad.Actions.Volume
-import XMonad.Actions.CycleWS (nextScreen, prevScreen, shiftPrevScreen, shiftNextScreen)
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.Ungrab
 import XMonad.Layout.NoBorders (smartBorders)
@@ -29,10 +28,6 @@ myKeys =
     [ ("M-<Space>", spawn myDmenu)
     , ("M-<Return>", spawn myTerminal)
     , ("M-S-<Return>", promote)
-    , ("M-w", prevScreen)
-    , ("M-S-w", shiftPrevScreen >> prevScreen)
-    , ("M-e", nextScreen)
-    , ("M-S-e", shiftNextScreen >> nextScreen)
     , ("M-k", sendMessage NextLayout)
     , ("M-S-s", unGrab *> spawn ("scrot -s " ++ myScreenShotArgs))
     , ("M-s", unGrab *> spawn ("scrot " ++ myScreenShotArgs))
