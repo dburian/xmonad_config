@@ -31,7 +31,6 @@ myKeys =
     , ("M-k", sendMessage NextLayout)
     , ("M-S-s", unGrab *> spawn ("scrot -s " ++ myScreenShotArgs))
     , ("M-s", unGrab *> spawn ("scrot " ++ myScreenShotArgs))
-    , ("<XF86AudioMute>", spawn "pamixer -t")
     , ("<XF86AudioRaiseVolume>", spawn "pamixer -i 5")
     , ("<XF86AudioLowerVolume>", spawn "pamixer -d 5")
     -- , ("<XF86MonBrightnessUp>", increase)
@@ -42,32 +41,36 @@ myLayout = smartBorders $ myTall ||| Mirror myTall ||| Full
   where
     myTall = Tall 1 (10/100) (1/2)
 
+
+myWhite = "#ffffff"
+myBlack = "#000000"
+myGray = "#aaaaaa"
+
 myConfig = def
   { modMask = myModMask
   , terminal = myTerminal
   , focusFollowsMouse = False
   , layoutHook = myLayout
-  , normalBorderColor = "#000000"
-  , focusedBorderColor = "#ffffff"
+  , normalBorderColor = myBlack
+  , focusedBorderColor = myWhite
   }
   `additionalKeysP` myKeys
 
+
 myXmobarPP :: PP
 myXmobarPP = def
-    { ppSep             = lowWhite "  "
+    { ppSep             = " "
+    , ppWsSep = ""
     , ppTitleSanitize   = xmobarStrip
-    , ppVisible         = wrap " " "" . xmobarBorder "Top" "#ffff00" 2
-    , ppCurrent         = wrap " " "" . xmobarBorder "Top" "#8be9fd" 2
-    , ppHidden          = white . wrap " " ""
-    , ppHiddenNoWindows = lowWhite . wrap " " ""
-    , ppUrgent          = red . wrap (yellow "!") (yellow "!")
+    , ppVisible         = xmobarColor myBlack myGray . wrap " " " "
+    , ppCurrent         = xmobarColor myBlack myWhite . wrap " " " "
+    , ppHidden          = xmobarColor myWhite myBlack . wrap " " " "
+    , ppHiddenNoWindows = xmobarColor myGray myBlack . wrap " " " "
+    , ppUrgent          = wrap "!" "!"
     , ppOrder           = myPPOrder
-    , ppExtras          = [logTitles formatFocused formatUnfocused]
+    , ppExtras          = [logTitles ppWindow ppWindow]
     }
   where
-    formatFocused   = wrap (white    "[") (white    "]") . magenta . ppWindow
-    formatUnfocused = wrap (lowWhite "[") (lowWhite "]") . blue    . ppWindow
-
     myPPOrder [ws, l, _, _] = [ws, l]
     myPPOrder a = a
 
@@ -76,13 +79,6 @@ myXmobarPP = def
     ppWindow :: String -> String
     ppWindow = xmobarRaw . (\w -> if null w then "untitled" else w) . shorten 30
 
-    blue, lowWhite, magenta, red, white, yellow :: String -> String
-    magenta  = xmobarColor "#ff79c6" ""
-    blue     = xmobarColor "#bd93f9" ""
-    white    = xmobarColor "#f8f8f2" ""
-    yellow   = xmobarColor "#f1fa8c" ""
-    red      = xmobarColor "#ff5555" ""
-    lowWhite = xmobarColor "#bbbbbb" ""
 
 myXmobarProp = withEasySB (statusBarProp myXmobar (pure myXmobarPP)) defToggleStrutsKey
 
